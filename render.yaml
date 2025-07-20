@@ -1,2 +1,39 @@
+services:
+  - type: web
+    name: n8n-service
+    env: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    envVars:
+      - key: N8N_HOST
+        value: n8n-service.onrender.com # Change this if you change the service name
+      - key: DB_TYPE
+        value: postgresdb
+      - key: DB_POSTGRESDB_DATABASE
+        fromService:
+          type: pserv
+          name: n8n-db
+          property: database
+      - key: DB_POSTGRESDB_HOST
+        fromService:
+          type: pserv
+          name: n8n-db
+          property: host
+      - key: DB_POSTGRESDB_PASSWORD
+        fromService:
+          type: pserv
+          name: n8n-db
+          property: password
+      - key: DB_POSTGRESDB_USER
+        fromService:
+          type: pserv
+          name: n8n-db
+          property: user
+      - fromEnvironmentGroup: my-n8n-credentials # Name of your environment group
 
-services: []
+  - type: pserv
+    name: n8n-db
+    env: postgres
+    disk:
+      name: n8n-data
+      sizeGB: 1
